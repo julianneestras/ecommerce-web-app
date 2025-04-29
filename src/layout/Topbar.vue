@@ -1,7 +1,7 @@
 <template>
-    <nav class="bg-gray-200 ">
+    <nav class="bg-gray-200 primary-bg">
         <div
-            class="flex flex-col md:flex-row gap-0 items-center justify-between md-justify-center max-w-screen-xl mx-auto w-full p-2 px-6 bg-gray-200 text-gray-900">
+            class="flex flex-col md:flex-row gap-0 items-center justify-between md-justify-center max-w-screen-xl mx-auto w-full p-2 px-6 bg-gray-200 text-gray-900 dark:text-white primary-bg">
             <div class="flex items-center text-base text-md md:text-md font-semibold tracking-widest">
                 <h1>METRIX APPAREL</h1>
             </div>
@@ -16,3 +16,5 @@
 <script setup lang="js">
 
 </script>
+
+<style scoped></style>
