@@ -2,6 +2,7 @@
 @import "flowbite/src/themes/default";
 @plugin "flowbite/plugin";
 @source "../node_modules/flowbite";
+@custom-variant dark (&:where(.dark, .dark *));
 
 @layer base {
   /* Set global font family */
@@ -20,10 +21,27 @@
   }
 }
 
-body {
+html body {
   margin: 0;
+  transition: background-color 0.3s ease, color 0.3s ease;
   /* display: flex;
   place-items: center;
   min-width: 320px;
   min-height: 100vh; */
+}
+
+html.dark body {
+  background-color: #121212;
+  color: #fff;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+html.dark .primary-bg {
+  background-color: #121212;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+html.dark .secondary-bg {
+  background-color: #282828;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
