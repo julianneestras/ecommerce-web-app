@@ -1,6 +1,8 @@
 import { createWebHistory, createRouter } from "vue-router";
 
 import Home from "../views/Home.vue";
+import Index from "../layout/index.vue";
+import Products from "../views/Products.vue";
 
 const routes = [
   {
@@ -9,8 +11,19 @@ const routes = [
   },
   {
     path: "/home",
-    name: "Home",
     component: Home,
+    children: [
+      {
+        path: "",
+        name: "Home",
+        component: Index,
+      },
+      {
+        path: "/products",
+        name: "Products",
+        component: Products,
+      },
+    ],
   },
 ];
 
