@@ -6,7 +6,7 @@
 
         <!-- Search button -->
         <button type="submit"
-            class="absolute right-0 top-1 bottom-1 my-auto h-9 w-11 flex items-center justify-center rounded-full bg-gray-800 cursor-pointer dark:bg-[#e6cfd5]">
+            class="absolute right-0 top-1 bottom-1 my-auto h-9 w-11 flex items-center justify-center rounded-full bg-gray-800 cursor-pointer dark:bg-[#dfc3ca]">
             <svg-icon :name="'search'" class="text-white h-4.5 dark:text-[#121212]" />
         </button>
     </div>
