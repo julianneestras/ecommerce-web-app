@@ -25,29 +25,31 @@
                 Bold colors, modern cuts, effortless comfort.
             </h3>
             <button type="button"
-                class="text-gray-900 bg-white border border-gray-500 hover:bg-gray-100 font-bold rounded-lg text-sm px-5 py-2.5 mt-4 md:mt-8 dark:border-0 dark:bg-[#dfc3ca] dark:hover:bg-[#cca0ac]">
+                class="text-gray-900 bg-white border border-gray-500 hover:bg-gray-100 font-bold rounded-lg text-sm px-5 py-2.5 mt-4 md:mt-8 dark:border-0 dark:bg-[#dfc3ca] dark:hover:bg-[#cca0ac] cursor-pointer">
                 Shop Now
             </button>
         </div>
-        <!-- <div>
-            <ProductCard>
+        <div>
+            <ProductCard :products="productStore.categories">
                 <template v-slot:title>
-                    <h1>Shop by Categories</h1>
+                    <h1 class="text-2xl font-extrabold">Shop by Categories</h1>
                 </template>
-</ProductCard>
-<ProductCard>
-    <template v-slot:title>
-                    <h1>New Collections</h1>
+            </ProductCard>
+            <ProductCard :products="productStore.products">
+                <template v-slot:title>
+                    <h1 class="text-2xl font-extrabold">Explore All Items</h1>
                 </template>
-</ProductCard>
-
-</div> -->
+            </ProductCard>
+        </div>
     </div>
 </template>
 
 <script setup lang="js">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { useProductStore } from '../store/product.js';
 import ProductCard from '../components/ProductCard.vue';
+
+const productStore = useProductStore();
 
 const imageUrls = ref([
     'https://images.unsplash.com/photo-1665832101859-5baac6b938ab?q=80&w=2662&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
@@ -56,4 +58,9 @@ const imageUrls = ref([
     'https://images.unsplash.com/photo-1714317438040-0e8584215699?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     'https://images.unsplash.com/photo-1665832102316-9fd8e8f77c88?q=80&w=2662&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
 ])
+
+onMounted(() => {
+    productStore.fetchCategories()
+    productStore.fetchAllProducts()
+})
 </script>
