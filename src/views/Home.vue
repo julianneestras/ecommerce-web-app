@@ -1,7 +1,7 @@
 <template>
     <div>
         <Navbar :isNavbarOpen="isNavbarOpen" @toggle-navbar="isNavbarOpen = !isNavbarOpen" />
-        <main class="primary-bg md:px-104">
+        <main class="primary-bg max-w-screen-xl mx-auto">
             <router-view />
         </main>
         <Footer />
