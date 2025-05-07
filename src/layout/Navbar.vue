@@ -11,7 +11,7 @@
                 </div>
                 <DarkModeToggle />
                 <div class="hidden md:block">
-                    <Cart />
+                    <CartIcon />
                 </div>
                 <button @click="handleClick" type="button"
                     class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
@@ -78,7 +78,7 @@
 import DarkModeToggle from '../components/DarkModeToggle.vue'
 import Topbar from './Topbar.vue'
 import SearchBar from '../components/SearchBar.vue'
-import Cart from '../components/Cart.vue'
+import CartIcon from '../components/CartIcon.vue'
 
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 
