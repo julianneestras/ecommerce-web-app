@@ -1,5 +1,5 @@
 <template>
-    <ProductCard :products="productStore.products">
+    <ProductCard :products="productStore.products" :isVisible="true">
         <template v-slot:title>
             <h1>Explore All Items</h1>
         </template>
