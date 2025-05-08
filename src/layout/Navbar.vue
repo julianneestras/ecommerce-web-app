@@ -1,11 +1,12 @@
 <template>
     <Topbar />
     <nav class="bg-white border-gray-100 primary-bg sticky top-0 z-50">
-        <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+        <div
+            class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4 sm:space-x-4 sm:justify-between md:justify-center lg:justify-between">
             <a href="" class="flex items-center space-x-3 rtl:space-x-reverse">
                 <svg-icon :name="'logo'" class="h-9 w-20" />
             </a>
-            <div class="flex justify-center items-center md:order-2 gap-1">
+            <div class="flex justify-center items-center md:order-2 m-0">
                 <div class="relative hidden md:block">
                     <SearchBar />
                 </div>
