@@ -1,7 +1,9 @@
 <template>
     <ProductCard :products="productStore.products" :isVisible="true">
         <template v-slot:title>
-            <h1>Explore All Items</h1>
+            <h1 class="text-2xl font-extrabold text-lg md:text-xl lg:text-2xl xl:text-2xl lg:mt-12">
+                Explore All Items
+            </h1>
         </template>
     </ProductCard>
 </template>
