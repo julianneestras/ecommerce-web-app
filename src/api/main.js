@@ -13,3 +13,17 @@ export const getProducts = () => {
     method: "get",
   });
 };
+
+export const getProductsBySlug = (slug) => {
+  return request({
+    url: `/products/slug/${slug}`,
+    method: "get",
+  });
+};
+
+export const getCategoryBySlug = (slug) => {
+  return request({
+    url: `/categories/slug/${slug}`,
+    method: "get",
+  });
+};
