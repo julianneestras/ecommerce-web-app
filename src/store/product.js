@@ -1,5 +1,10 @@
 import { defineStore } from "pinia";
-import { getCategories, getProducts } from "../api/main.js";
+import {
+  getCategories,
+  getCategoryBySlug,
+  getProducts,
+  getProductsBySlug,
+} from "../api/main.js";
 import { ref } from "vue";
 
 // export const useProductStore = defineStore("product", {
@@ -43,5 +48,30 @@ export const useProductStore = defineStore("product", () => {
     }
   };
 
-  return { categories, fetchCategories, products, fetchAllProducts };
+  const fetchProductsBySlug = async (slug) => {
+    try {
+      const res = await getProductsBySlug(slug);
+      return res.data;
+    } catch (err) {
+      console.log("Failed to fetch products by slug:", err);
+    }
+  };
+
+  const fetchCategoryBySlug = async (slug) => {
+    try {
+      const res = await getCategoryBySlug(slug);
+      return res.data;
+    } catch (err) {
+      console.log("Failed to fetch category by slug:", err);
+    }
+  };
+
+  return {
+    categories,
+    fetchCategories,
+    products,
+    fetchAllProducts,
+    fetchProductsBySlug,
+    fetchCategoryBySlug,
+  };
 });
