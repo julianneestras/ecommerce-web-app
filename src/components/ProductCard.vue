@@ -11,7 +11,7 @@
                 hasShopByCategoriesTitle ? 'h-[70px] sm:h-[130px] md:h-[150px] lg:h-[170px] xl:h-[200px]' : '',
             ]">
                 <div class="overflow-hidden rounded-t-lg">
-                    <img :src="item.images ? item.images : item.image"
+                    <img :src="item.images ? (Array.isArray(item.images) ? item.images[0] : item.images) : item.image"
                         :alt="hasShopByCategoriesTitle ? item.name : item.title"
                         class="w-full aspect-square object-cover hover:scale-105 transition-transform duration-300" />
                 </div>
@@ -30,14 +30,15 @@
                         <div class="flex flex-col">
                             <p v-if="isProductsPage"
                                 class="text-sm mt-0.5 text-gray-600 truncate overflow-hidden whitespace-nowrap dark:text-gray-400">
-                                {{ item.description }}
+                                {{ item.description ? item.description.substring(0, 60) + '...' : '' }}
                             </p>
                             <div class="flex">
                                 <!-- Category tag is now a button that prevents click propagation -->
-                                <button v-if="isProductsPage || (!isProductsPage && hasExploreAllItemsTitle)"
+                                <button
+                                    v-if="(isProductsPage || (!isProductsPage && hasExploreAllItemsTitle)) && item.category"
                                     @click.stop="navigateToCategory(item.category.slug)"
                                     class="-ml-1 text-gray-500 text-xs sm:text-sm mt-2 inline-block w-auto border border-gray-200 rounded-full px-3 py-0.5 bg-gray-100 hover:bg-gray-200 cursor-pointer dark:bg-[#3a3a3a] dark:text-[#d2abb6] dark:border-[#575757] dark:hover:bg-[#444444] transition-colors">
-                                    {{ item.category.name }}
+                                    {{ item.category ? item.category.name : '' }}
                                 </button>
                             </div>
                         </div>
@@ -88,7 +89,7 @@ const discountedProducts = computed(() =>
     props.products.map((product) => ({
         ...product,
         discount: Math.floor(Math.random() * 51) + 10,
-        rating: Math.floor(Math.random() * 5) + 1
+        rating: product.rating || Math.floor(Math.random() * 5) + 1
     }))
 )
 
@@ -116,10 +117,19 @@ const isProductsPage = computed(() => {
 })
 
 const navigateToProduct = (slug) => {
-    router.push(`/product/${slug}`)
+    if (slug) {
+        router.push(`/product/${slug}`)
+    }
 }
 
 const navigateToCategory = (categorySlug) => {
-    router.push(`/products?category=${categorySlug}`)
+    if (categorySlug) {
+        router.push({
+            path: '/products',
+            query: {
+                category: categorySlug
+            }
+        })
+    }
 }
 </script>
