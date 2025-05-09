@@ -27,3 +27,10 @@ export const getCategoryBySlug = (slug) => {
     method: "get",
   });
 };
+
+export const getProductsByCategory = (categoryId) => {
+  return request({
+    url: `/categories/${categoryId}/products`,
+    method: "get",
+  });
+};
