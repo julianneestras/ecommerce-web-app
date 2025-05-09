@@ -1,7 +1,7 @@
 <template>
     <div class="container mx-auto px-4 py-8">
         <!-- Loading state -->
-        <div v-if="loading" class="flex justify-center items-center h-64">
+        <div v-if="loading || productStore.loading" class="flex justify-center items-center h-64">
             <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900 dark:border-white"></div>
         </div>
 
@@ -31,7 +31,7 @@
                             <div v-for="category in productStore.categories" :key="category.id" class="flex items-center">
                                 <input :id="`category-${category.id}`" type="radio" name="category"
                                     :checked="productStore.selectedCategorySlug === category.slug"
-                                    @change="filterByCategory(category.slug)"
+                                    @change="filterByCategory(category.slug, category.id)"
                                     class="w-4 h-4 text-[#121212] dark:text-[#c594a2] bg-gray-100 border-gray-300 rounded focus:ring-[#282828] dark:focus:ring-[#cca0ac] dark:ring-offset-[#3f3f3f] dark:bg-[#3f3f3f] dark:border-[#575757]">
                                 <label :for="`category-${category.id}`"
                                     class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
@@ -74,7 +74,7 @@
                         </button>
                     </div>
                     
-                    <ProductCard v-else :products="productStore.filteredProducts" :isVisible="true" hasExploreAllItemsTitle>
+                    <ProductCard v-else :products="productStore.filteredProducts" :isVisible="true" :hasExploreAllItemsTitle="true">
                         <template v-slot:title>
                             <div class="flex justify-between items-center mb-4">
                                 <h1 class="text-2xl font-extrabold text-lg md:text-xl lg:text-2xl xl:text-2xl">
@@ -120,12 +120,18 @@ const localPriceRange = ref({
 const localSortOption = ref('default');
 
 // Methods
-const filterByCategory = (slug) => {
-    updateUrlParams({ category: slug });
+const filterByCategory = (slug, categoryId) => {
+    updateUrlParams({ 
+        category: slug,
+        category_id: categoryId 
+    });
 };
 
 const clearCategoryFilter = () => {
-    updateUrlParams({ category: null });
+    updateUrlParams({ 
+        category: null,
+        category_id: null 
+    });
 };
 
 const applyFilters = () => {
@@ -190,8 +196,7 @@ watch(
 onMounted(async () => {
     loading.value = true;
     await productStore.fetchCategories();
-    await productStore.fetchAllProducts();
-
+    
     // Initialize filters from URL
     await productStore.initFiltersFromURLParams(route.query);
 
