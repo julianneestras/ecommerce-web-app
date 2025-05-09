@@ -4,6 +4,7 @@ import {
   getCategoryBySlug,
   getProducts,
   getProductsBySlug,
+  getProductsByCategory,
 } from "../api/main.js";
 import { ref, computed } from "vue";
 
@@ -18,6 +19,7 @@ export const useProductStore = defineStore("product", () => {
     min: 0,
     max: 10000,
   });
+  const loading = ref(false);
 
   // API
   const fetchCategories = async () => {
@@ -32,6 +34,7 @@ export const useProductStore = defineStore("product", () => {
 
   const fetchAllProducts = async () => {
     try {
+      loading.value = true;
       const res = await getProducts();
       products.value = res.data;
       console.log("products", res.data);
@@ -46,6 +49,8 @@ export const useProductStore = defineStore("product", () => {
       }
     } catch (err) {
       console.error("Failed to fetch products:", err);
+    } finally {
+      loading.value = false;
     }
   };
 
@@ -55,6 +60,8 @@ export const useProductStore = defineStore("product", () => {
       return res.data;
     } catch (err) {
       console.error("Failed to fetch products by slug:", err);
+    } finally {
+      loading.value = false;
     }
   };
 
@@ -64,6 +71,19 @@ export const useProductStore = defineStore("product", () => {
       return res.data;
     } catch (err) {
       console.error("Failed to fetch category by slug:", err);
+    }
+  };
+
+  const fetchProductsByCategory = async (categoryId) => {
+    try {
+      loading.value = true;
+      const res = await getProductsByCategory(categoryId);
+      products.value = res.data;
+      console.log("products by category", res.data);
+    } catch (err) {
+      console.error("Failed to fetch products by category:", err);
+    } finally {
+      loading.value = false;
     }
   };
 
@@ -84,7 +104,7 @@ export const useProductStore = defineStore("product", () => {
   const filteredProducts = computed(() => {
     let filtered = [...products.value];
 
-    // Filter by category - MODIFIED THIS PART
+    // Filter by category
     if (selectedCategorySlug.value) {
       console.log("Filtering by category slug:", selectedCategorySlug.value);
       console.log("Current products:", filtered.length);
@@ -181,6 +201,8 @@ export const useProductStore = defineStore("product", () => {
       selectedCategory.value = null;
     }
 
+    await fetchAllProducts();
+
     // Handle price range
     const minPrice = parseInt(routeQuery.minPrice) || minMaxPrices.value.min;
     const maxPrice = parseInt(routeQuery.maxPrice) || minMaxPrices.value.max;
@@ -198,6 +220,10 @@ export const useProductStore = defineStore("product", () => {
       try {
         const categoryData = await fetchCategoryBySlug(slug);
         selectedCategory.value = categoryData;
+
+        if (categoryData && categoryData.id) {
+          await fetchProductsByCategory(categoryData.id);
+        }
       } catch (err) {
         console.error("Failed to load category details:", err);
         selectedCategory.value = null;
@@ -215,6 +241,7 @@ export const useProductStore = defineStore("product", () => {
     selectedCategorySlug,
     sortOption,
     priceRange,
+    loading,
 
     // Computed
     minMaxPrices,
@@ -225,6 +252,7 @@ export const useProductStore = defineStore("product", () => {
     fetchAllProducts,
     fetchProductsBySlug,
     fetchCategoryBySlug,
+    fetchProductsByCategory,
 
     // Actions
     setSelectedCategorySlug,
