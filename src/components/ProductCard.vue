@@ -5,7 +5,7 @@
     ]">
         <div v-for="(item, index) in discountedProducts" :key="index" class="flex flex-col items-center">
             <!-- Card container -->
-            <div @click="navigateToProduct(item.slug)" :class="[
+            <div @click="handleItemClick(item)" :class="[
                 'dark:bg-[#282828] rounded-lg shadow-sm hover:shadow-lg transition-shadow dark:border-0 flex flex-col w-full cursor-pointer',
                 isProductsPage || hasExploreAllItemsTitle ? 'p-3 bg-white' : 'bg-[#e6e6e6]',
                 hasShopByCategoriesTitle ? 'h-[70px] sm:h-[130px] md:h-[150px] lg:h-[170px] xl:h-[200px]' : '',
@@ -36,7 +36,7 @@
                                 <!-- Category tag is now a button that prevents click propagation -->
                                 <button
                                     v-if="(isProductsPage || (!isProductsPage && hasExploreAllItemsTitle)) && item.category"
-                                    @click.stop="navigateToCategory(item.category.slug)"
+                                    @click.stop="navigateToCategory(item.category.slug, item.category.id)"
                                     class="-ml-1 text-gray-500 text-xs sm:text-sm mt-2 inline-block w-auto border border-gray-200 rounded-full px-3 py-0.5 bg-gray-100 hover:bg-gray-200 cursor-pointer dark:bg-[#3a3a3a] dark:text-[#d2abb6] dark:border-[#575757] dark:hover:bg-[#444444] transition-colors">
                                     {{ item.category ? item.category.name : '' }}
                                 </button>
@@ -112,24 +112,44 @@ const props = defineProps({
     }
 })
 
-const isProductsPage = computed(() => {
-    return route.name?.toString().toLowerCase() === 'products' || route.path === '/products'
-})
+const isProductsPage = computed(() => route.path.includes('/products'))
 
-const navigateToProduct = (slug) => {
-    if (slug) {
-        router.push(`/product/${slug}`)
-    }
-}
+// const navigateToProduct = (slug) => {
+//     if (slug) {
+//         router.push(`/product/${slug}`)
+//     }
+// }
 
-const navigateToCategory = (categorySlug) => {
+// Updated to accept category ID as well
+const navigateToCategory = (categorySlug, categoryId) => {
     if (categorySlug) {
         router.push({
             path: '/products',
             query: {
-                category: categorySlug
+                category: categorySlug,
+                category_id: categoryId // Store category ID in URL params
             }
         })
     }
 }
+
+const handleItemClick = (item) => {
+    const slug = item.slug;
+    const categorySlug = item.category?.slug;
+    const categoryId = item.category?.id;
+
+    if (isProductsPage.value || props.hasExploreAllItemsTitle) {
+        if (slug) {
+            router.push(`/product/${slug}`);
+        }
+    } else if (categorySlug && categoryId) {
+        router.push({
+            path: '/products',
+            query: {
+                category: categorySlug,
+                category_id: categoryId
+            }
+        });
+    }
+};
 </script>
