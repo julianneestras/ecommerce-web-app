@@ -10,10 +10,12 @@
             </div>
         </div>
         <div class="space-y-4">
-            <p
+            <button v-if="isProductsOverviewPage && product?.category"
+                @click.stop="navigateToCategory(product.category.slug, product.category.id)"
                 class="-ml-1 text-gray-500 text-xs sm:text-sm mt-2 inline-block w-auto border border-gray-200 rounded-full px-3 py-0.5 bg-gray-100 hover:bg-gray-200 cursor-pointer dark:bg-[#3a3a3a] dark:text-[#d2abb6] dark:border-[#575757] dark:hover:bg-[#444444] transition-colors">
-                {{ product.category.name }}
-            </p>
+                {{ product.category ? product.category.name : '' }}
+            </button>
+
             <h2 class="text-3xl font-bold text-gray-800 dark:text-white">{{ product.title }}</h2>
             <p class="text-gray-600 dark:text-gray-300 text-sm">{{ product.description }}</p>
             <p class="text-xl font-semibold text-gray-800 dark:text-[#d2abb6]">Php {{ product.price }}.00</p>
@@ -141,11 +143,12 @@
 </template>
 
 <script setup>
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useProductStore } from '../../store/product.js';
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 
 const route = useRoute()
+const router = useRouter()
 const productStore = useProductStore()
 
 const product = ref(null)
@@ -176,5 +179,19 @@ const addToCart = () => {
         product: product.value,
         quantity: quantity.value
     })
+}
+
+const isProductsOverviewPage = computed(() => route.name === 'ProductOverview')
+
+const navigateToCategory = (categorySlug, categoryId) => {
+    if (categorySlug) {
+        router.push({
+            path: '/products',
+            query: {
+                category: categorySlug,
+                category_id: categoryId // Store category ID in URL params
+            }
+        })
+    }
 }
 </script>
