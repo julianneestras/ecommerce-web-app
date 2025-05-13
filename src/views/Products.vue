@@ -21,7 +21,7 @@
                         <div class="flex flex-col space-y-2">
                             <div class="flex items-center">
                                 <input id="all-categories" type="radio" name="category"
-                                    :checked="!productStore.selectedCategorySlug" @change="clearCategoryFilter"
+                                    :checked="!productStore.selectedCategoryId" @change="clearCategoryFilter"
                                     class="w-4 h-4 text-[#121212] dark:text-[#c594a2] bg-gray-100 border-gray-300 rounded focus:ring-[#282828] dark:focus:ring-[#cca0ac] dark:ring-offset-gray-800 dark:bg-[#3f3f3f] dark:border-[#575757]">
                                 <label for="all-categories"
                                     class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
@@ -30,7 +30,7 @@
                             </div>
                             <div v-for="category in productStore.categories" :key="category.id" class="flex items-center">
                                 <input :id="`category-${category.id}`" type="radio" name="category"
-                                    :checked="productStore.selectedCategorySlug === category.slug"
+                                    :checked="String(productStore.selectedCategoryId) === String(category.id)"
                                     @change="filterByCategory(category.slug, category.id)"
                                     class="w-4 h-4 text-[#121212] dark:text-[#c594a2] bg-gray-100 border-gray-300 rounded focus:ring-[#282828] dark:focus:ring-[#cca0ac] dark:ring-offset-[#3f3f3f] dark:bg-[#3f3f3f] dark:border-[#575757]">
                                 <label :for="`category-${category.id}`"
@@ -112,7 +112,6 @@ const router = useRouter();
 const productStore = useProductStore();
 const loading = ref(true);
 
-// Local state for UI interaction before applying filters
 const localPriceRange = ref({
     min: 0,
     max: 10000
@@ -151,7 +150,7 @@ const updateUrlParams = (params) => {
         if (value === null || value === undefined) {
             delete newQuery[key];
         } else {
-            newQuery[key] = value;
+            newQuery[key] = String(value);
         }
     });
 
@@ -180,7 +179,6 @@ watch(
     { deep: true, immediate: true }
 );
 
-// Also watch for store price range changes
 watch(
     () => productStore.priceRange,
     (newPriceRange) => {
