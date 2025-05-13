@@ -114,35 +114,8 @@ const props = defineProps({
 
 const isProductsPage = computed(() => route.path.includes('/products'))
 
-// const navigateToProduct = (slug) => {
-//     if (slug) {
-//         router.push(`/product/${slug}`)
-//     }
-// }
-
-// Updated to accept category ID as well
 const navigateToCategory = (categorySlug, categoryId) => {
-    if (categorySlug) {
-        router.push({
-            path: '/products',
-            query: {
-                category: categorySlug,
-                category_id: categoryId // Store category ID in URL params
-            }
-        })
-    }
-}
-
-const handleItemClick = (item) => {
-    const slug = item.slug;
-    const categorySlug = item.category?.slug;
-    const categoryId = item.category?.id;
-
-    if (isProductsPage.value || props.hasExploreAllItemsTitle) {
-        if (slug) {
-            router.push(`/product/${slug}`);
-        }
-    } else if (categorySlug && categoryId) {
+    if (categorySlug && categoryId) {
         router.push({
             path: '/products',
             query: {
@@ -150,6 +123,34 @@ const handleItemClick = (item) => {
                 category_id: categoryId
             }
         });
+    }
+}
+
+const handleItemClick = (item) => {
+    if (props.hasShopByCategoriesTitle) {
+        const categorySlug = item.slug;
+        const categoryId = item.id;
+
+        if (categorySlug && categoryId) {
+            router.push({
+                path: '/products',
+                query: {
+                    category: categorySlug,
+                    category_id: categoryId
+                }
+            });
+        }
+        return;
+    }
+
+    const slug = item.slug;
+    const categorySlug = item.category?.slug;
+    const categoryId = item.category?.id;
+
+    if ((isProductsPage.value || props.hasExploreAllItemsTitle) && slug) {
+        router.push(`/product/${slug}`);
+    } else if (categorySlug && categoryId) {
+        navigateToCategory(categorySlug, categoryId);
     }
 };
 </script>
