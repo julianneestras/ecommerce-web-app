@@ -21,13 +21,6 @@ export const getProductsBySlug = (slug) => {
   });
 };
 
-export const getCategoryBySlug = (slug) => {
-  return request({
-    url: `/categories/slug/${slug}`,
-    method: "get",
-  });
-};
-
 export const getProductsByCategory = (categoryId) => {
   return request({
     url: `/categories/${categoryId}/products`,
