@@ -1,7 +1,6 @@
 import { defineStore } from "pinia";
 import {
   getCategories,
-  getCategoryBySlug,
   getProducts,
   getProductsBySlug,
   getProductsByCategory,
@@ -12,8 +11,7 @@ export const useProductStore = defineStore("product", () => {
   // State
   const categories = ref([]);
   const products = ref([]);
-  const selectedCategorySlug = ref(null);
-  const selectedCategory = ref(null);
+  const selectedCategoryId = ref(null);
   const sortOption = ref("default");
   const priceRange = ref({
     min: 0,
@@ -21,14 +19,18 @@ export const useProductStore = defineStore("product", () => {
   });
   const loading = ref(false);
 
-  // API
+  // API calls
   const fetchCategories = async () => {
     try {
+      loading.value = true;
       const res = await getCategories();
       categories.value = res.data;
-      console.log("categories", res.data);
+      return res.data;
     } catch (err) {
       console.error("Failed to fetch categories:", err);
+      return [];
+    } finally {
+      loading.value = false;
     }
   };
 
@@ -37,18 +39,11 @@ export const useProductStore = defineStore("product", () => {
       loading.value = true;
       const res = await getProducts();
       products.value = res.data;
-      console.log("products", res.data);
-
-      // Initialize price range based on actual product prices
-      if (products.value.length > 0) {
-        const prices = products.value.map((product) => parseInt(product.price));
-        priceRange.value = {
-          min: Math.min(...prices),
-          max: Math.max(...prices),
-        };
-      }
+      updatePriceRangeFromProducts();
+      return res.data;
     } catch (err) {
       console.error("Failed to fetch products:", err);
+      return [];
     } finally {
       loading.value = false;
     }
@@ -56,44 +51,51 @@ export const useProductStore = defineStore("product", () => {
 
   const fetchProductsBySlug = async (slug) => {
     try {
+      loading.value = true;
       const res = await getProductsBySlug(slug);
       return res.data;
     } catch (err) {
-      console.error("Failed to fetch products by slug:", err);
+      console.error("Failed to fetch product by slug:", err);
+      return null;
     } finally {
       loading.value = false;
-    }
-  };
-
-  const fetchCategoryBySlug = async (slug) => {
-    try {
-      const res = await getCategoryBySlug(slug);
-      return res.data;
-    } catch (err) {
-      console.error("Failed to fetch category by slug:", err);
     }
   };
 
   const fetchProductsByCategory = async (categoryId) => {
     try {
       loading.value = true;
+      selectedCategoryId.value = categoryId;
       const res = await getProductsByCategory(categoryId);
       products.value = res.data;
-      console.log("products by category", res.data);
+      updatePriceRangeFromProducts();
+      return res.data;
     } catch (err) {
       console.error("Failed to fetch products by category:", err);
+      return [];
     } finally {
       loading.value = false;
     }
   };
 
-  // Computed functions
-  const minMaxPrices = computed(() => {
-    if (!products.value.length)
-      return {
-        min: 0,
-        max: 10000,
+  const updatePriceRangeFromProducts = () => {
+    if (products.value.length > 0) {
+      const prices = products.value.map((product) => parseInt(product.price));
+      priceRange.value = {
+        min: Math.min(...prices),
+        max: Math.max(...prices),
       };
+    }
+  };
+
+  // Computed properties
+  const minMaxPrices = computed(() => {
+    if (!products.value.length) {
+      return { 
+        min: 0, 
+        max: 10000 
+      };
+    }
     const prices = products.value.map((product) => parseInt(product.price));
     return {
       min: Math.min(...prices),
@@ -101,45 +103,25 @@ export const useProductStore = defineStore("product", () => {
     };
   });
 
+  const selectedCategory = computed(() => {
+    if (!selectedCategoryId.value) return null;
+    return (
+      categories.value.find((cat) => cat.id === selectedCategoryId.value) ||
+      null
+    );
+  });
+
   const filteredProducts = computed(() => {
     let filtered = [...products.value];
 
-    // Filter by category
-    if (selectedCategorySlug.value) {
-      console.log("Filtering by category slug:", selectedCategorySlug.value);
-      console.log("Current products:", filtered.length);
-
-      filtered = filtered.filter((product) => {
-        // Make sure product.category exists before accessing its properties
-        if (!product.category) {
-          return false;
-        }
-
-        // Check if the category slug matches (case insensitive)
-        const categoryMatches =
-          product.category.slug.toLowerCase() ===
-          selectedCategorySlug.value.toLowerCase();
-
-        // Debug logging
-        console.log(
-          `Product ${product.id} - category: ${product.category.slug}, match: ${categoryMatches}`
-        );
-
-        return categoryMatches;
-      });
-
-      console.log("Filtered products count:", filtered.length);
-    }
-
-    // Rest of the filtering logic remains the same
-    // Filter by price range
+    // Apply price range filter
     filtered = filtered.filter(
       (product) =>
         parseInt(product.price) >= priceRange.value.min &&
         parseInt(product.price) <= priceRange.value.max
     );
 
-    // Sort products
+    // Apply sorting
     switch (sortOption.value) {
       case "price-low":
         filtered.sort((a, b) => parseInt(a.price) - parseInt(b.price));
@@ -153,22 +135,12 @@ export const useProductStore = defineStore("product", () => {
       case "name-desc":
         filtered.sort((a, b) => b.title.localeCompare(a.title));
         break;
-      default:
-        break;
     }
 
     return filtered;
   });
 
-  // Actions / Setters
-  const setSelectedCategorySlug = (slug) => {
-    selectedCategorySlug.value = slug;
-  };
-
-  const setSelectedCategory = (category) => {
-    selectedCategory.value = category;
-  };
-
+  // Actions
   const setSortOption = (option) => {
     sortOption.value = option;
   };
@@ -181,8 +153,7 @@ export const useProductStore = defineStore("product", () => {
   };
 
   const clearFilters = () => {
-    selectedCategorySlug.value = null;
-    selectedCategory.value = null;
+    selectedCategoryId.value = null;
     sortOption.value = "default";
     priceRange.value = {
       min: minMaxPrices.value.min,
@@ -190,18 +161,20 @@ export const useProductStore = defineStore("product", () => {
     };
   };
 
+  // Initialize from URL parameters
   const initFiltersFromURLParams = async (routeQuery) => {
-    // Handle category filtering
-    const categoryParam = routeQuery.category;
-    if (categoryParam) {
-      selectedCategorySlug.value = categoryParam;
-      await loadCategoryDetails(categoryParam);
-    } else {
-      selectedCategorySlug.value = null;
-      selectedCategory.value = null;
+    // First load categories if needed
+    if (categories.value.length === 0) {
+      await fetchCategories();
     }
 
-    await fetchAllProducts();
+    // Handle category filtering
+    const categoryId = routeQuery.category_id;
+    if (categoryId) {
+      await fetchProductsByCategory(categoryId);
+    } else {
+      await fetchAllProducts();
+    }
 
     // Handle price range
     const minPrice = parseInt(routeQuery.minPrice) || minMaxPrices.value.min;
@@ -215,30 +188,11 @@ export const useProductStore = defineStore("product", () => {
     sortOption.value = routeQuery.sort || "default";
   };
 
-  const loadCategoryDetails = async (slug) => {
-    if (slug) {
-      try {
-        const categoryData = await fetchCategoryBySlug(slug);
-        selectedCategory.value = categoryData;
-
-        if (categoryData && categoryData.id) {
-          await fetchProductsByCategory(categoryData.id);
-        }
-      } catch (err) {
-        console.error("Failed to load category details:", err);
-        selectedCategory.value = null;
-      }
-    } else {
-      selectedCategory.value = null;
-    }
-  };
-
   return {
     // State
     categories,
     products,
-    selectedCategory,
-    selectedCategorySlug,
+    selectedCategoryId,
     sortOption,
     priceRange,
     loading,
@@ -246,21 +200,18 @@ export const useProductStore = defineStore("product", () => {
     // Computed
     minMaxPrices,
     filteredProducts,
+    selectedCategory,
 
     // API
     fetchCategories,
     fetchAllProducts,
     fetchProductsBySlug,
-    fetchCategoryBySlug,
     fetchProductsByCategory,
 
     // Actions
-    setSelectedCategorySlug,
-    setSelectedCategory,
     setSortOption,
     setPriceRange,
     clearFilters,
     initFiltersFromURLParams,
-    loadCategoryDetails,
   };
 });
