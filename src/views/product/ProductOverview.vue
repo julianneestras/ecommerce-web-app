@@ -54,11 +54,42 @@
                 </div>
             </div>
             <button
-                class="mt-6 bg-red-600 dark:bg-[#dfc3ca] hover:bg-red-700 dark:hover:bg-[#cca0ac] text-white dark:text-gray-800 hover:text-white font-semibold px-6 py-3 rounded-lg shadow-sm transition flex items-center gap-2 w-full justify-center cursor-pointer"
-                @click="addToCart">
-                Add to Bag
+                class="mt-6 bg-red-600 dark:bg-[#dfc3ca] hover:bg-red-700 dark:hover:bg-[#cca0ac] text-white dark:text-gray-800 hover:text-white font-semibold px-6 py-3 rounded-lg shadow-sm transition flex items-center gap-2 w-full justify-center cursor-pointer relative"
+                @click="addToCart" :disabled="addedModal">
+                <span>Add to Bag</span>
             </button>
+            <!-- Alert Overlay Wrapper -->
+            <div v-if="addedModal"
+                class="fixed inset-0 z-50 flex items-center justify-center bg-black/40
+            md:inset-auto md:bg-transparent md:fixed md:top-20 md:left-1/2 md:transform md:-translate-x-1/2 md:justify-center md:items-start">
 
+                <!-- Alert Box -->
+                <div class="flex items-center p-4 text-green-800 rounded-lg bg-green-50
+              dark:bg-gray-800 dark:text-green-400 shadow-lg transition-all duration-500 ease-out">
+
+                    <svg class="shrink-0 w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                        fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                            d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
+                    </svg>
+
+                    <span class="sr-only">Success</span>
+
+                    <div class="ms-3 text-sm font-medium">
+                        Successfully added to cart!
+                    </div>
+
+                    <button type="button" @click="addedModal = false"
+                        class="ms-auto -mx-1.5 -my-1.5 bg-green-50 text-green-500 rounded-lg focus:ring-2 focus:ring-green-400 p-1.5 hover:bg-green-200 inline-flex items-center justify-center h-8 w-8 dark:bg-gray-800 dark:text-green-400 dark:hover:bg-gray-700"
+                        aria-label="Close">
+                        <span class="sr-only">Close</span>
+                        <svg class="w-3 h-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -145,15 +176,18 @@
 <script setup>
 import { useRoute, useRouter } from 'vue-router'
 import { useProductStore } from '../../store/product.js';
+import { useCartStore } from '../../store/cart.js';
 import { ref, onMounted, computed } from 'vue'
 
 const route = useRoute()
 const router = useRouter()
 const productStore = useProductStore()
+const cartStore = useCartStore()
 
 const product = ref(null)
 const quantity = ref(1)
 const selectedImage = ref('')
+const addedModal = ref(false)
 
 onMounted(async () => {
     const slug = route.params.slug
@@ -175,11 +209,17 @@ const decreaseQuantity = () => {
 }
 
 const addToCart = () => {
-    console.log('Added to cart:', {
-        product: product.value,
-        quantity: quantity.value
-    })
+    if (product.value) {
+        cartStore.addToCart(product.value, quantity.value)
+
+        addedModal.value = true
+
+        setTimeout(() => {
+            addedModal.value = false
+        }, 2000)
+    }
 }
+
 
 const isProductsOverviewPage = computed(() => route.name === 'ProductOverview')
 
