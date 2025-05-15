@@ -4,6 +4,7 @@ import { ref, computed } from "vue";
 export const useCartStore = defineStore("cart", () => {
   // State
   const cartItems = ref([]);
+  const loading = ref(false);
 
   // Computed
   const cartCount = computed(() => {
@@ -60,6 +61,11 @@ export const useCartStore = defineStore("cart", () => {
     saveToLocalStorage();
   };
 
+  // Loading
+  const setLoading = (state) => {
+    loading.value = state;
+  };
+
   // Local storage
   const saveToLocalStorage = () => {
     localStorage.setItem("cart", JSON.stringify(cartItems.value));
@@ -77,6 +83,7 @@ export const useCartStore = defineStore("cart", () => {
   return {
     // State
     cartItems,
+    loading,
 
     // Computed
     cartCount,
@@ -88,6 +95,7 @@ export const useCartStore = defineStore("cart", () => {
     removeFromCart,
     updateQty,
     clearCart,
+    setLoading,
   };
 });
 
