@@ -5,7 +5,6 @@
             </div>
         </div>
 
-
         <div v-else-if="!cartStore.isEmpty">
             <!-- Cart Header -->
             <div class="mb-6">
@@ -221,7 +220,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useCartStore } from '../store/cart.js';
 
 const showDeleteModal = ref(false)
@@ -249,5 +248,10 @@ const confirmDelete = () => {
     productToDelete.value = null
 }
 
-
+onMounted(() => {
+    cartStore.setLoading(true)
+    setTimeout(() => {
+        cartStore.setLoading(false)
+    }, 1000)
+})
 </script>
