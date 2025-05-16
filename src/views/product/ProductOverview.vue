@@ -23,13 +23,13 @@
                 <div class="flex items-center rounded-lg overflow-hidden w-fit">
                     <form class="max-w-xs mx-auto">
                         <label for="quantity-input"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Choose
-                            quantity:
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Choose quantity:
                         </label>
                         <div class="relative flex items-center max-w-[8rem]">
                             <button @click="decreaseQuantity" type="button" id="decrement-button"
                                 data-input-counter-decrement="quantity-input"
-                                class="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none cursor-pointer">
+                                class="bg-gray-100 dark:bg-[#282828] dark:hover:bg-[#767676] dark:border-[#3f3f3f] dark:focus:ring-[#575757] focus:ring-1 focus:outline-none focus:ring-gray-400 dark:focus:border-[#575757] hover:bg-gray-200 border border-gray-300  rounded-s-lg p-3 h-11 cursor-pointer">
                                 <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
                                     xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
@@ -38,11 +38,11 @@
                             </button>
                             <input type="text" id="quantity-input" data-input-counter data-input-counter-min="1"
                                 data-input-counter-max="50" aria-describedby="helper-text-explanation"
-                                class="bg-gray-100 dark:bg-[#282828] border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-gray-500 focus:border-gray-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                class="bg-gray-100 dark:bg-[#282828] border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-gray-500 dark:focus:ring-[#575757] focus:border-gray-500 block w-full py-2.5 dark:border-[#3f3f3f] dark:placeholder-gray-400 dark:text-white"
                                 placeholder="0" :value="quantity" required :disabled="quantity <= 1" />
                             <button @click="increaseQuantity" type="button" id="increment-button"
                                 data-input-counter-increment="quantity-input"
-                                class="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none cursor-pointer">
+                                class="bg-gray-100 dark:bg-[#282828] dark:hover:bg-[#767676] dark:border-[#3f3f3f] hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-400 dark:focus:ring-[#575757] focus:ring-1 focus:outline-none cursor-pointer">
                                 <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
                                     xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
